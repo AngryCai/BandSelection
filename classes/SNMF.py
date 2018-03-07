@@ -15,8 +15,8 @@ class BandSelection_SNMF(object):
         self.W, self.H = self.getWH(x_input)
 
     # 得到W和H
-    def getWH(self, x_input):
-        snmf = nimfa.Snmf(x_input, seed="random_c", rank=10, max_iter=12, version='r', eta=1.,
+    def getWH(self, x_input, rank=10):
+        snmf = nimfa.Snmf(x_input, seed="random_c", rank=rank, max_iter=12, version='r', eta=1.,
                             beta=1e-4, i_conv=10, w_min_change=0)
         snmf_fit = snmf()
         W = snmf.basis()

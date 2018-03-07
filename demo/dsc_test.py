@@ -58,9 +58,7 @@ if __name__ == '__main__':
     step = []
     finally_score = []
     for i in range(0, 1):
-
         CAE.initlization()
-
         for iter_ft in range(ft_times):
             iter_ft = iter_ft + 1
             C, l1_cost, l2_cost, total_loss = CAE.finetune_fit(img_train, learning_rate)   #根据梯度下降法算出最小化损失后的参数C

@@ -28,10 +28,11 @@ if __name__ == '__main__':
 
     x_input = img.reshape(n_row * n_column, n_band)
     model_path = './pretrain-model-COIL20/model.ckpt'
+
+    num_class = 7
     S = BandSelection_SNMF(x_input=x_input, model_path=model_path)
 
-    w = S.W
-    h = S.H
+    w, h= S.getWH(x_input, num_class)
     y_x = S.maxh_selection(h)
     bands = S.band_selection(y_x, img)  # 选出每个类中的代表波段
     score = S.eval_band(bands, gt, train_inx, test_idx)  # 进行评价
