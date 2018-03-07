@@ -15,7 +15,8 @@ from sklearn.preprocessing import normalize
 from tensorflow.examples.tutorials.mnist import input_data
 import copy
 
-class DSC_BandSelection(object):
+
+class DSC_NET(object):
     def __init__(self, n_input, kernel_size, n_hidden, reg_const1=1.0, reg_const2=1.0, reg=None, batch_size=256, \
                  denoise=False, model_path=None, logs_path='./logs'):
         # n_hidden is a arrary contains the number of neurals on every layer
@@ -199,17 +200,62 @@ class DSC_BandSelection(object):
         grp = spectral.fit_predict(L)
         return grp, L
 
-    def band_selection(self, cluster_result, img):
+    def cluster(self, X, n_cluster):
+        n_row, n_column, n_band = X.shape
+        img_transposed = np.transpose(X, axes=(2, 0, 1))  # Img.transpose()
+        img_transposed = np.reshape(img_transposed, (n_band, n_row, n_column, 1))
+        ft_times = 30
+        alpha = 0.04
+        learning_rate = 1e-3
+        all_loss = []
+        for i in range(0, 1):
+            self.initlization()
+            for iter_ft in range(ft_times):
+                iter_ft = iter_ft + 1
+                C, l1_cost, l2_cost, total_loss = self.finetune_fit(img_transposed, learning_rate)
+                print('# epoch %s' % (iter_ft))
+                all_loss.append(total_loss)
+            C = self.thrC(C, alpha)
+            y_x, CKSym_x = self.post_proC(C, n_cluster, 1, 4)
+            print(all_loss)
+            return y_x
+                # all_loss.append(total_loss)
+                # if iter_ft % display_step == 0:
+                #     print("epoch: %.1d" % iter_ft,
+                #           "L1 cost: %.8f, L2 cost: %.8f, total cost: %.8f" % (l1_cost, l2_cost, total_loss))
+                #     C = self.thrC(C, alpha)
+                #     y_x, CKSym_x = self.post_proC(C, n_cluster, 1, 4)
+                    # bands = self.select_band(y_x, img)  # n_row * n_clm * n_class
+                    # score = dsc_bs.eval_band(bands, gt, train_inx, test_idx)
+                    # all_acc.append(score)
+                    # print('eval score:', score)
+            # print(all_loss)
+            # print(all_acc)
+
+
+
+class DSCBS(object):
+    """
+    Select band subset using DSC algorithm
+    """
+    def __init__(self, n_band, **kwargs_DSC):
+        self.n_band = n_band
+        self.dsc = DSC_NET(**kwargs_DSC)
+
+    def fit(self, X):
         """
-        Select band according to clustering center
-        :param cluster_result:
-        :param img: array like: shape (n_row, n_column, n_band)
+        :param X: Array-like with size (n_row, n_column, n_band)
         :return:
         """
+        self.X = X
+        return self
+
+    def predict(self, X):
+        cluster_result = self.dsc.cluster(X, self.n_band)
         selected_band = []
-        n_row, n_column, n_band = img.shape
+        n_row, n_column, n_band = X.shape
         n_cluster = np.unique(cluster_result).__len__()
-        img_ = img.reshape((n_row * n_column, -1))  # n_sample * n_band
+        img_ = X.reshape((n_row * n_column, -1))  # n_sample * n_band
         for c in np.unique(cluster_result):
             idx = np.nonzero(cluster_result == c)
             center = np.mean(img_[:, idx[0]], axis=1).reshape((-1, 1))
@@ -219,30 +265,89 @@ class DSC_BandSelection(object):
         bands = np.asarray(selected_band)
         bands = bands.reshape(n_cluster, n_row, n_column)
         bands = np.transpose(bands, axes=(1, 2, 0))
-        return bands
+        self.bands = bands
+        return self.bands
 
-    def eval_band(self, new_img, gt, train_inx, test_idx):
-        from Toolbox.Preprocessing import Processor
-        from sklearn.neighbors import KNeighborsClassifier as KNN
-        from sklearn.model_selection import cross_val_score, train_test_split
-        from sklearn.preprocessing import maxabs_scale
-        from sklearn.metrics import accuracy_score
-        p = Processor()
-        img_, gt_ = p.get_correct(new_img, gt)
-        img_ = maxabs_scale(img_)
-        # X_train, X_test, y_train, y_test = train_test_split(img_, gt_, test_size=0.4, random_state=42)
-        X_train, X_test, y_train, y_test = img_[train_inx], img_[test_idx], gt_[train_inx], gt_[test_idx]
-        knn_classifier = KNN(n_neighbors=5)
-        knn_classifier.fit(X_train, y_train)
-        # score = cross_val_score(knn_classifier, img_, y=gt_, cv=3)
-        y_pre = knn_classifier.predict(X_test)
-        score = accuracy_score(y_test, y_pre)
-        # score = np.mean(score)
-        return score
 
-    def err_rate(self, gt_s, s):
-        c_x = self.best_map(gt_s, s)
-        err_x = np.sum(gt_s[:] != c_x[:])
-        missrate = err_x.astype(float) / (gt_s.shape[0])
-        return missrate
-
+# if __name__ == '__main__':
+#     from Toolbox.Preprocessing import Processor
+#     from sklearn.preprocessing import minmax_scale
+#
+#     root = 'F:\\Python\\HSI_Files\\'
+#     # im_, gt_ = 'SalinasA_corrected', 'SalinasA_gt'
+#     im_, gt_ = 'Indian_pines_corrected', 'Indian_pines_gt'
+#     # im_, gt_ = 'Pavia', 'Pavia_gt'
+#     # im_, gt_ = 'Botswana', 'Botswana_gt'
+#     # im_, gt_ = 'KSC', 'KSC_gt'
+#
+#     img_path = root + im_ + '.mat'
+#     gt_path = root + gt_ + '.mat'
+#     print(img_path)
+#
+#     p = Processor()
+#     img, gt = p.prepare_data(img_path, gt_path)
+#     # Img, Label = Img[:256, :, :], Label[:256, :]
+#     n_row, n_column, n_band = img.shape
+#     train_inx, test_idx = p.get_tr_tx_index(p.get_correct(img, gt)[1], test_size=0.9)
+#
+#     img_train = minmax_scale(img.reshape(n_row * n_column, n_band)).reshape((n_row, n_column, n_band))
+#     # img_train = np.transpose(img_train, axes=(2, 0, 1))  # Img.transpose()
+#     # img_train = np.reshape(img_train, (n_band, n_row, n_column, 1))
+#
+#     n_input = [n_row, n_column]
+#     kernel_size = [11]
+#     n_hidden = [16]
+#     batch_size = n_band
+#     model_path = './pretrain-model-COIL20/model.ckpt'
+#     ft_path = './pretrain-model-COIL20/model.ckpt'
+#     logs_path = './pretrain-model-COIL20/logs'
+#
+#     num_class = 5  # how many class we sample
+#     batch_size_test = n_band
+#
+#     iter_ft = 0
+#     ft_times = 50
+#     display_step = 1
+#     alpha = 0.04
+#     learning_rate = 1e-3
+#
+#     reg1 = 1e-4
+#     reg2 = 150.0
+#     kwargs = {'n_input': n_input, 'n_hidden': n_hidden, 'reg_const1': reg1, 'reg_const2': reg2,
+#               'kernel_size': kernel_size,'batch_size': batch_size_test, 'model_path': model_path, 'logs_path': logs_path}
+#     dscbs = DSCBS(10, **kwargs)
+#     dscbs.fit(img_train)
+#     bands = dscbs.predict(img_train)
+#     print(bands.shape)
+#
+#
+#
+#     # CAE = ConvAE(n_input=n_input, n_hidden=n_hidden, reg_const1=reg1, reg_const2=reg2, kernel_size=kernel_size,
+#     #              batch_size=batch_size_test, model_path=model_path, logs_path=logs_path)
+#
+#     # acc_ = []
+#     # all_loss = []
+#     # all_acc = []
+#     # for i in range(0, 1):
+#     #     # coil20_all_subjs = copy.deepcopy(Img)
+#     #     # coil20_all_subjs = coil20_all_subjs.astype(float)
+#     #     # label_all_subjs = copy.deepcopy(Label)
+#     #     # label_all_subjs = label_all_subjs - label_all_subjs.min() + 1
+#     #     # label_all_subjs = np.squeeze(label_all_subjs)
+#     #     CAE.initlization()
+#     #     # CAE.restore()
+#     #     for iter_ft in range(ft_times):
+#     #         iter_ft = iter_ft + 1
+#     #         C, l1_cost, l2_cost, total_loss = CAE.finetune_fit(img_train, learning_rate)
+#     #         all_loss.append(total_loss)
+#     #         if iter_ft % display_step == 0:
+#     #             print("epoch: %.1d" % iter_ft,
+#     #                   "L1 cost: %.8f, L2 cost: %.8f, total cost: %.8f" % (l1_cost, l2_cost, total_loss))
+#     #             C = thrC(C, alpha)
+#     #             y_x, CKSym_x = post_proC(C, num_class, 1, 4)
+#     #             bands = band_selection(y_x, img)  # n_row * n_clm * n_class
+#     #             score = eval_band(bands, gt, train_inx, test_idx)
+#     #             all_acc.append(score)
+#     #             print('eval score:', score)
+#     #     print(all_loss)
+#     #     print(all_acc)
