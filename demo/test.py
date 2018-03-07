@@ -4,7 +4,7 @@ from BandSelection.classes.DSC_NET import DSC_BandSelection
 import numpy as np
 
 if __name__ == '__main__':
-    root = 'F:\\Python\\HSI_Files\\'
+    root = '/Users/cengmeng/PycharmProjects/python/Deep-subspace-clustering-networks/Data/'
     # im_, gt_ = 'SalinasA_corrected', 'SalinasA_gt'
     im_, gt_ = 'Indian_pines_corrected', 'Indian_pines_gt'
     # im_, gt_ = 'Pavia', 'Pavia_gt'
