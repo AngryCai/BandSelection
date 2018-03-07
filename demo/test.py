@@ -12,8 +12,8 @@ if __name__ == '__main__':
     root = 'F:\Python\HSI_Files\\'
     #'/Users/cengmeng/PycharmProjects/python/Deep-subspace-clustering-networks/Data/'
 
-    # im_, gt_ = 'SalinasA_corrected', 'SalinasA_gt'
-    im_, gt_ = 'Indian_pines_corrected', 'Indian_pines_gt'
+    im_, gt_ = 'SalinasA_corrected', 'SalinasA_gt'
+    # im_, gt_ = 'Indian_pines_corrected', 'Indian_pines_gt'
     # im_, gt_ = 'Pavia', 'Pavia_gt'
     # im_, gt_ = 'Botswana', 'Botswana_gt'
     # im_, gt_ = 'KSC', 'KSC_gt'
@@ -48,9 +48,9 @@ if __name__ == '__main__':
     reg1 = 1e-4
     reg2 = 150.0
 
-    n_selected_band = 5
+    n_selected_band = 10
 
-    kwargs = {'n_input': n_input, 'n_hidden': n_hidden, 'reg_const1': reg1, 'reg_const2': reg2, 'max_iter':10,
+    kwargs = {'n_input': n_input, 'n_hidden': n_hidden, 'reg_const1': reg1, 'reg_const2': reg2, 'max_iter':50,
               'kernel_size': kernel_size, 'batch_size': batch_size_test, 'model_path': model_path,
               'logs_path': logs_path}
 
