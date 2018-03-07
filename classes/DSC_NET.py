@@ -18,7 +18,7 @@ import copy
 
 class DSC_NET(object):
     def __init__(self, n_input, kernel_size, n_hidden, reg_const1=1.0, reg_const2=1.0, reg=None, batch_size=256, \
-                 denoise=False, model_path=None, logs_path='./logs'):
+                 max_iter=10, denoise=False, model_path=None, logs_path='./logs'):
         # n_hidden is a arrary contains the number of neurals on every layer
         self.n_input = n_input
         self.n_hidden = n_hidden
@@ -28,7 +28,7 @@ class DSC_NET(object):
         self.iter = 0
         self.batch_size = batch_size
         weights = self._initialize_weights()
-
+        self.max_iter = max_iter
         # model
         self.x = tf.placeholder(tf.float32, [None, self.n_input[0], self.n_input[1], 1])
         self.learning_rate = tf.placeholder(tf.float32, [])
@@ -204,13 +204,13 @@ class DSC_NET(object):
         n_row, n_column, n_band = X.shape
         img_transposed = np.transpose(X, axes=(2, 0, 1))  # Img.transpose()
         img_transposed = np.reshape(img_transposed, (n_band, n_row, n_column, 1))
-        ft_times = 30
+        # ft_times = 30
         alpha = 0.04
         learning_rate = 1e-3
         all_loss = []
         for i in range(0, 1):
             self.initlization()
-            for iter_ft in range(ft_times):
+            for iter_ft in range(self.max_iter):
                 iter_ft = iter_ft + 1
                 C, l1_cost, l2_cost, total_loss = self.finetune_fit(img_transposed, learning_rate)
                 print('# epoch %s' % (iter_ft))
