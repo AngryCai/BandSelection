@@ -25,8 +25,9 @@ class SPEC_HSI(object):
         """
         # specify the second ranking function which uses all except the 1st eigenvalue
         kwargs = {'style': 0}
-        n_row, n_column, __n_band = X.shape
-        XX = X.reshape((n_row * n_column, -1))  # n_sample * n_band
+        # n_row, n_column, __n_band = X.shape
+        # XX = X.reshape((n_row * n_column, -1))  # n_sample * n_band
+        XX = X
 
         # obtain the scores of features
         score = SPEC.spec(XX, **kwargs)
@@ -36,6 +37,6 @@ class SPEC_HSI(object):
 
         # obtain the dataset on the selected features
         selected_features = XX[:, idx[0:self.n_band]]
-        selected_features.reshape((self.n_band, n_row, n_column))
-        selected_features = np.transpose(selected_features, axes=(1, 2, 0))
+        # selected_features.reshape((self.n_band, n_row, n_column))
+        # selected_features = np.transpose(selected_features, axes=(1, 2, 0))
         return selected_features
