@@ -7,6 +7,7 @@ from BandSelection.classes.SPEC import SPEC_HSI
 from BandSelection.classes.utility import eval_band
 from BandSelection.classes.SNMF import BandSelection_SNMF
 from BandSelection.classes.Lap_score import Lap_score_HSI
+from BandSelection.classes.NDFS import NDFS_HSI
 
 if __name__ == '__main__':
     root = 'F:\Python\HSI_Files\\'
@@ -48,7 +49,7 @@ if __name__ == '__main__':
     reg1 = 1e-4
     reg2 = 150.0
 
-    n_selected_band = 10
+    n_selected_band = 20
 
     kwargs = {'n_input': n_input, 'n_hidden': n_hidden, 'reg_const1': reg1, 'reg_const2': reg2, 'max_iter':50,
               'kernel_size': kernel_size, 'batch_size': batch_size_test, 'model_path': model_path,
@@ -56,12 +57,13 @@ if __name__ == '__main__':
 
     algorithm = [SPEC_HSI(n_selected_band),
                  Lap_score_HSI(n_selected_band),
+                 NDFS_HSI(np.unique(gt_correct).shape[0], n_selected_band),
                  BandSelection_SNMF(n_selected_band),
                  DSCBS(n_selected_band, **kwargs)]
 
     for i in range(algorithm.__len__()):
         # alg.fit(X_img)
-        if i < 2:
+        if i <= 2:
             X_new = algorithm[i].predict(img_correct)
         else:
             X_new = algorithm[i].predict(X_img)

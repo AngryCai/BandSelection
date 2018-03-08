@@ -15,7 +15,7 @@ class Lap_score_HSI(object):
 
     def predict(self, X):
         """
-        :param X: shape [n_row, n_clm, n_band]
+        :param X: shape [n_row*n_clm, n_band]
         :return:
         """
         # n_row, n_column, __n_band = X.shape

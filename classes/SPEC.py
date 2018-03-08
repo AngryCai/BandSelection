@@ -20,7 +20,7 @@ class SPEC_HSI(object):
     def predict(self, X):
         """
 
-        :param X: shape [n_row, n_clm, n_band]
+        :param X: shape [n_row*n_clm, n_band]
         :return:
         """
         # specify the second ranking function which uses all except the 1st eigenvalue
