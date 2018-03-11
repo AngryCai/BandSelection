@@ -17,7 +17,7 @@ import copy
 
 
 class DSC_NET(object):
-    def __init__(self, n_input, kernel_size, n_hidden, reg_const1=1.0, reg_const2=1.0, reg=None, batch_size=256, \
+    def __init__(self, n_input, kernel_size, n_hidden, reg_const1=1.0, reg_const2=1.0, reg=None, batch_size=256,
                  max_iter=10, denoise=False, model_path=None, logs_path='./logs'):
         # n_hidden is a arrary contains the number of neurals on every layer
         self.n_input = n_input
