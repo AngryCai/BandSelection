@@ -4,8 +4,6 @@ import scipy as sp
 from sklearn.linear_model import orthogonal_mp_gram
 
 
-
-
 class ApproximateKSVD(object):
     def __init__(self, n_components, max_iter=10, tol=1e-6,
                  transform_n_nonzero_coefs=None):
