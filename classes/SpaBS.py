@@ -94,7 +94,7 @@ class SpaBS(object):
         """
         :param X:通过ksvd算法得到的系数矩阵
         :param Xs:按降序排列的前k个索引矩阵
-        :return: 所有self的值
+        :return: 所有self
         """
         # 对系数矩阵每一行进行排序
         n_row, n_column = X.shape
