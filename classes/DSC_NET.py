@@ -90,13 +90,13 @@ class DSC_NET(object):
     #     all_weights = dict()
     #     with tf.variable_scope('weight', reuse=tf.AUTO_REUSE):
     #         all_weights['enc_w0'] = tf.get_variable("enc_w0",
-    #                                                 shape=[self.kernel_size[0], self.kernel_size[0], 1, self.n_hidden[0]],
-    #                                                 initializer=layers.xavier_initializer_conv2d(), regularizer=self.reg)
+    #         shape=[self.kernel_size[0], self.kernel_size[0], 1, self.n_hidden[0]],
+    #         initializer=layers.xavier_initializer_conv2d(), regularizer=self.reg)
     #         all_weights['enc_b0'] = tf.Variable(tf.zeros([self.n_hidden[0]], dtype=tf.float32))
     #
     #         all_weights['dec_w0'] = tf.get_variable("dec_w0",
-    #                                                 shape=[self.kernel_size[0], self.kernel_size[0], 1, self.n_hidden[0]],
-    #                                                 initializer=layers.xavier_initializer_conv2d(), regularizer=self.reg)
+    #         shape=[self.kernel_size[0], self.kernel_size[0], 1, self.n_hidden[0]],
+    #         initializer=layers.xavier_initializer_conv2d(), regularizer=self.reg)
     #         all_weights['dec_b0'] = tf.Variable(tf.zeros([1], dtype=tf.float32))
     #     return all_weights
 
