@@ -9,11 +9,12 @@ from BandSelection.classes.utility import eval_band
 
 
 if __name__ == '__main__':
-    root = '/Users/cengmeng/PycharmProjects/python/Deep-subspace-clustering-networks/Data/'
-    # im_, gt_ = 'SalinasA_corrected', 'SalinasA_gt'
+    root = 'F:\Python\HSI_Files\\'
+    # root = '/Users/cengmeng/PycharmProjects/python/Deep-subspace-clustering-networks/Data/'
+    im_, gt_ = 'SalinasA_corrected', 'SalinasA_gt'
     # im_, gt_ = 'Indian_pines_corrected', 'Indian_pines_gt'
     # im_, gt_ = 'Pavia', 'Pavia_gt'
-    im_, gt_ = 'KSC', 'KSC_gt'
+    # im_, gt_ = 'KSC', 'KSC_gt'
 
     img_path = root + im_ + '.mat'
     gt_path = root + gt_ + '.mat'
@@ -32,12 +33,12 @@ if __name__ == '__main__':
     # x_input = img.reshape(n_row * n_column, n_band)
     model_path = './pretrain-model-COIL20/model.ckpt'
 
-    n_select_band = 20
+    n_select_band = 5
 
     spabs = SpaBS(n_select_band)
-    X_new = spabs.predict(X_img)  # 选出每个类中的代表波段
+    X_new = spabs.predict(img_correct)  # 选出每个类中的代表波段
 
-    X_new, _ = p.get_correct(X_new, gt)        # 带入没有压缩的数据
+    # X_new, _ = p.get_correct(X_new, gt)        # 带入没有压缩的数据
     score = eval_band(X_new, gt_correct, train_inx, test_idx)  # 进行评价
 
     print('acc=%s' % score)

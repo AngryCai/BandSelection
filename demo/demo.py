@@ -14,8 +14,8 @@ if __name__ == '__main__':
     root = 'F:\Python\HSI_Files\\'
     #'/Users/cengmeng/PycharmProjects/python/Deep-subspace-clustering-networks/Data/'
 
-    # im_, gt_ = 'SalinasA_corrected', 'SalinasA_gt'
-    im_, gt_ = 'Indian_pines_corrected', 'Indian_pines_gt'
+    im_, gt_ = 'SalinasA_corrected', 'SalinasA_gt'
+    # im_, gt_ = 'Indian_pines_corrected', 'Indian_pines_gt'
     # im_, gt_ = 'Pavia', 'Pavia_gt'
     # im_, gt_ = 'Botswana', 'Botswana_gt'
     # im_, gt_ = 'KSC', 'KSC_gt'
@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     n_selected_band = 5
 
-    kwargs = {'n_input': n_input, 'n_hidden': n_hidden, 'reg_const1': reg1, 'reg_const2': reg2, 'max_iter':50,
+    kwargs = {'n_input': n_input, 'n_hidden': n_hidden, 'reg_const1': reg1, 'reg_const2': reg2, 'max_iter':5,
               'kernel_size': kernel_size, 'batch_size': batch_size_test, 'model_path': model_path,
               'logs_path': logs_path}
 
@@ -63,9 +63,9 @@ if __name__ == '__main__':
                  BandSelection_SNMF(n_selected_band),
                  DSCBS(n_selected_band, **kwargs)]
 
-    # algorithm = [ISSC_HSI(n_selected_band, coef_=1e-5)]
+    # algorithm = [DSCBS(n_selected_band, **kwargs)]
+
     for i in range(algorithm.__len__()):
-        # alg.fit(X_img)
         if i <= 3:
             X_new = algorithm[i].predict(img_correct)
         else:
