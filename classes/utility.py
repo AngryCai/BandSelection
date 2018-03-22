@@ -8,7 +8,7 @@ from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_score, train_test_split
 from sklearn.preprocessing import maxabs_scale
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.model_selection import cross_val_score, StratifiedKFold, cross_val_predict
 import numpy as np
 import copy
 from numpy import linalg
@@ -32,23 +32,28 @@ def eval_band(new_img, gt, train_inx, test_idx):
     return score
 
 
-def eval_band_cv(new_img, gt, times=10):
+def eval_band_cv(X, y, times=10):
     skf = StratifiedKFold(n_splits=3, shuffle=True)
     p = Processor()
-    gt_ = gt
-    img_ = maxabs_scale(new_img)
-    score_out_knn, score_out_svm, score_out_elm = [], [], []
+    img_ = maxabs_scale(X)
+    y_test_all = []
+    estimator = [KNN(n_neighbors=5), SVC(C=1e4, kernel='rbf', gamma=1.), ELM_Classifier(200)]
+    estimator_pre, y_test_all = [[], [], []], []
     for i in range(times):  # repeat N times K-fold CV
-        score_1 = cross_val_score(KNN(n_neighbors=5), img_, gt_, cv=skf)
-        score_2 = cross_val_score(SVC(C=1, kernel='rbf', gamma=1.), img_, gt_, cv=skf)
-        score_3 = cross_val_score(ELM_Classifier(200), img_, gt_, cv=skf)
-        score_out_knn.append(score_1)
-        score_out_svm.append(score_2)
-        score_out_elm.append(score_3)
-    score_out_knn, score_out_svm, score_out_elm = \
-        np.asarray(score_out_knn), np.asarray(score_out_svm), np.asarray(score_out_elm)
-    mean = np.asarray([score_out_knn.mean(), score_out_svm.mean(), score_out_elm.mean()])
-    return score_out_knn, score_out_svm, score_out_elm, mean
+        skf = StratifiedKFold(n_splits=3, shuffle=True)
+        for train_index, test_index in skf.split(img_, y):
+            X_train, X_test = X[train_index], X[test_index]
+            y_train, y_test = y[train_index], y[test_index]
+            y_test_all.append(y_test)
+            for c in range(3):
+                estimator[c].fit(X_train, y_train)
+                estimator_pre[c].append(estimator[c].predict(X_test))
+    clf = ['knn', 'svm', 'elm']
+    score = []
+    for z in range(3):
+        ca, oa, aa, kappa = p.save_res_4kfolds_cv(estimator_pre[z], y_test_all, file_name=clf[z] + '.npz', verbose=True)
+        score.append([oa, kappa])
+    return score
 
 
 class ELM_Classifier(BaseEstimator, ClassifierMixin):
