@@ -51,7 +51,7 @@ def eval_band_cv(X, y, times=10):
     clf = ['knn', 'svm', 'elm']
     score = []
     for z in range(3):
-        ca, oa, aa, kappa = p.save_res_4kfolds_cv(estimator_pre[z], y_test_all, file_name=clf[z] + '.npz', verbose=True)
+        ca, oa, aa, kappa = p.save_res_4kfolds_cv(estimator_pre[z], y_test_all, file_name=clf[z] + 'score.npz', verbose=True)
         score.append([oa, kappa])
     return score
 
