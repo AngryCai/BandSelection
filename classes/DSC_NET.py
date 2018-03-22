@@ -199,11 +199,10 @@ class DSC_NET(object):
         # C: coefficient matrix, K: number of clusters, d: dimension of each subspace
         n = C.shape[0]
         C = 0.5 * (C + C.T)
-        C = C - np.diag(np.diag(C)) + np.eye(n,
-                                             n)  # for sparse C, this step will make the algorithm more numerically stable
+        C = C - np.diag(np.diag(C)) + np.eye(n, n)  # for sparse C, this step will make the algorithm more numerically stable
         r = d * K + 1
         print('r = %s, C:%s' % (r, np.unique(C).shape))
-        U, S, _ = svds(C, r, v0=np.ones(n))
+        U, S, _ = svds(C, r)
         U = U[:, ::-1]
         S = np.sqrt(S[::-1])
         S = np.diag(S)
