@@ -33,10 +33,8 @@ def eval_band(new_img, gt, train_inx, test_idx):
 
 
 def eval_band_cv(X, y, times=10):
-    skf = StratifiedKFold(n_splits=3, shuffle=True)
     p = Processor()
     img_ = maxabs_scale(X)
-    y_test_all = []
     estimator = [KNN(n_neighbors=5), SVC(C=1e4, kernel='rbf', gamma=1.), ELM_Classifier(200)]
     estimator_pre, y_test_all = [[], [], []], []
     for i in range(times):  # repeat N times K-fold CV
