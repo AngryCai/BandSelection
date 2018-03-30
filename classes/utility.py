@@ -17,6 +17,14 @@ from sklearn.base import BaseEstimator, ClassifierMixin
 
 
 def eval_band(new_img, gt, train_inx, test_idx):
+    """
+
+    :param new_img:
+    :param gt:
+    :param train_inx:
+    :param test_idx:
+    :return:
+    """
     p = Processor()
     # img_, gt_ = p.get_correct(new_img, gt)
     gt_ = gt
