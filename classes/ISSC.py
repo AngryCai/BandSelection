@@ -40,8 +40,8 @@ class ISSC_HSI(object):
         coefficient_mat = -1 * np.dot(np.linalg.inv(np.dot(X.transpose(), X) + self.coef_ * I),
                                       np.linalg.inv(np.diag(np.diag(np.dot(X.transpose(), X) + self.coef_ * I))))
         temp = np.linalg.norm(coefficient_mat, axis=0).reshape(1, -1)
-        affinity = (np.dot(coefficient_mat.transpose(), coefficient_mat) / \
-                 np.dot(temp.transpose(), temp))**2
+        affinity = (np.dot(coefficient_mat.transpose(), coefficient_mat) /
+                    np.dot(temp.transpose(), temp))**2
 
         sc = SpectralClustering(n_clusters=self.n_band, affinity='precomputed')
         sc.fit(affinity)

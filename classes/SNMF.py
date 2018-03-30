@@ -18,7 +18,7 @@ class BandSelection_SNMF(object):
         # # Note that X has to reshape to (n_fea., n_sample)
         # XX = X.transpose()  # (n_band, n_pixel)
         # snmf = nimfa.Snmf(X, seed="random_c", rank=self.n_band)  # remain para. default
-        snmf = nimfa.Snmf(X, seed="random_c", rank=self.n_band, max_iter=12, version='r', eta=1.,
+        snmf = nimfa.Snmf(X, rank=self.n_band, max_iter=20, version='r', eta=1.,
                           beta=1e-4, i_conv=10, w_min_change=0)
         snmf_fit = snmf()
         W = snmf.basis()  # shape: n_band * k

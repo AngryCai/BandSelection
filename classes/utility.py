@@ -33,6 +33,12 @@ def eval_band(new_img, gt, train_inx, test_idx):
 
 
 def eval_band_cv(X, y, times=10):
+    """
+    :param X:
+    :param y:
+    :param times: n times k-fold cv
+    :return:  knn/svm/elm=>(OA+std, Kappa+std)
+    """
     p = Processor()
     img_ = maxabs_scale(X)
     estimator = [KNN(n_neighbors=5), SVC(C=1e4, kernel='rbf', gamma=1.), ELM_Classifier(200)]
