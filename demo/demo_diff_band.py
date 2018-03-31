@@ -14,8 +14,8 @@ from BandSelection.classes.SpaBS import SpaBS
 if __name__ == '__main__':
     root = 'F:\Python\HSI_Files\\'
     #'/Users/cengmeng/PycharmProjects/python/Deep-subspace-clustering-networks/Data/'
-    im_, gt_ = 'SalinasA_corrected', 'SalinasA_gt'
-    # im_, gt_ = 'Indian_pines_corrected', 'Indian_pines_gt'
+    # im_, gt_ = 'SalinasA_corrected', 'SalinasA_gt'
+    im_, gt_ = 'Indian_pines_corrected', 'Indian_pines_gt'
     # im_, gt_ = 'Pavia', 'Pavia_gt'
     # im_, gt_ = 'Botswana', 'Botswana_gt'
     # im_, gt_ = 'KSC', 'KSC_gt'
@@ -61,16 +61,16 @@ if __name__ == '__main__':
     # algorithm = [DSCBS(n_selected_band, **kwargs)]
     alg_key = ['SPEC', 'Lap_score', 'NDFS', 'SpaBS', 'ISSC', 'SNMF', 'DSC']
     num_band = np.arange(5, 55, 5)
-    mean_res, knn_res, svm_res, elm_res = [], [], [], []
+    knn_res, svm_res, elm_res = [], [], []
     for n_selected_band in num_band:
         algorithm = [SPEC_HSI(n_selected_band),
                      Lap_score_HSI(n_selected_band),
-                     NDFS_HSI(np.unique(gt_correct).shape[0], n_selected_band),
+                     #NDFS_HSI(np.unique(gt_correct).shape[0], n_selected_band),
                      SpaBS(n_selected_band),
                      ISSC_HSI(n_selected_band, coef_=1.e-4),  #
                      BandSelection_SNMF(n_selected_band),
                      DSCBS(n_selected_band, **kwargs)]
-        mean_score, knn_score, svm_score, elm_score = [], [], [], []
+        knn_score, svm_score, elm_score = [], [], []
         for i in range(algorithm.__len__()):
             if i <= 4:
                 X_new = algorithm[i].predict(X_img_2D)
@@ -78,15 +78,17 @@ if __name__ == '__main__':
             else:
                 X_new = algorithm[i].predict(X_img)
                 X_new, _ = p.get_correct(X_new, gt)
-            knn, svm, elm, mean = eval_band_cv(X_new, gt_correct, times=10)
-            mean_score.append(mean), knn_score.append(knn)
-            svm_score.append(svm), elm_score.append(elm)
-            print('n_band:%s, alg:%s\nknn: %s\nsvm: %s\nelm: %s\nmean:%s' % (n_selected_band, alg_key[i], knn, svm, elm, mean))
-        mean_res.append(mean_score), knn_res.append(knn_score)
-        svm_res.append(svm_score), elm_res.append(elm_score)
+            knn_oa_kappa, svm_oa_kappa, elm_oa_kappa = eval_band_cv(X_new, gt_correct, times=1)
+            knn_score.append(knn_oa_kappa), svm_score.append(svm_oa_kappa), elm_score.append(elm_oa_kappa)
+            print('n_band:%s, alg:%s\nknn: %s\nsvm: %s\nelm: %s' %
+                  (n_selected_band, alg_key[i], knn_oa_kappa, svm_oa_kappa, elm_oa_kappa))
+        knn_res.append(knn_score), svm_res.append(svm_score), elm_res.append(elm_score)
         print('-----------------------------------------')
-        if n_selected_band % 3 == 0:
-            np.savez('./score-indian.npz', mean_score=np.asarray(mean_res), knn_score=np.asarray(knn_res),
+        if n_selected_band % 10 == 0:
+            np.savez('./score-indian.npz', knn_score=np.asarray(knn_res),
                      svm_score=np.asarray(svm_res), elm_score=np.asarray(elm_res))
-    np.savez('./score-indian.npz', mean_score=np.asarray(mean_res), knn_score=np.asarray(knn_res),
+    np.savez('./score-indian.npz', knn_score=np.asarray(knn_res),
              svm_score=np.asarray(svm_res), elm_score=np.asarray(elm_res))
+    # saved results format: alg_A: [band_range, n_algorithm, n_indicator, n_res]
+
+    # # TODO: add all band results here
