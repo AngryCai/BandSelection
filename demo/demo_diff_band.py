@@ -89,6 +89,8 @@ if __name__ == '__main__':
                      svm_score=np.asarray(svm_res), elm_score=np.asarray(elm_res))
     np.savez('./score-indian.npz', knn_score=np.asarray(knn_res),
              svm_score=np.asarray(svm_res), elm_score=np.asarray(elm_res))
+
     # saved results format: alg_A: [band_range, n_algorithm, n_indicator, n_res]
+    #                              [5, [alg_A, [[oa, std], [kappa, std]]]]
 
     # # TODO: add all band results here
